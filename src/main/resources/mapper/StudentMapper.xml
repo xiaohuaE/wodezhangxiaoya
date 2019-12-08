@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zihao.mybatisdemo.mapper.StudentMapper">
+
+    <resultMap id="stuX" type="com.zihao.mybatisdemo.model.TStudent" >
+        <id column="sid" property="sid" javaType="java.lang.Integer"/>
+        <result column="sname" property="sname" javaType="java.lang.String"/>
+        <result column="age" property="age" javaType="java.lang.Integer"/>
+        <result column="remark" property="remark" javaType="java.lang.String"/>
+        <result column="sname_pinyin" property="snamePinyin" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--<cache type="org.mybatis.caches.ehcache.EhcacheCache">-->
+        <!--<property name="timeToIdleSeconds" value="3600"/>-->
+        <!--<property name="timeToLiveSeconds" value="3600"/>-->
+        <!--<property name="maxEntriesLocalHeap" value="1000"/>-->
+        <!--<property name="maxEntriesLocalDisk" value="10000000"/>-->
+        <!--<property name="memoryStoreEvictionPolicy" value="LRU"/>-->
+    <!--</cache>-->
+
+    <cache type="com.zihao.mybatisdemo.util.RedisCache"/>
+
+    <!--redis 的配置关闭-->
+    <!--<cache-->
+            <!--type="com.zihao.mybatisdemo.util.RedisCache"-->
+            <!--eviction="LRU"-->
+            <!--flushInterval="6000000"-->
+            <!--size="1024"-->
+            <!--readOnly="false"-->
+    <!--/>-->
+
+    <sql id="xin">
+        sid,sname,age,remark,sname_pinyin
+    </sql>
+
+
+    <insert id="add" parameterType="com.zihao.mybatisdemo.model.TStudent">
+        INSERT INTO web.t_student (sname,age,remark,sname_Pinyin)
+        VALUES
+        (#{sname},#{age},#{remark},#{snamePinyin}) ;
+    </insert>
+
+
+    <update id="edit">
+      update web.t_student
+      <set>
+        <if test="sname !=null and sname!='' ">
+            sname = #{sname},
+        </if>
+        <if test="age !=null  ">
+            age = #{age},
+        </if>
+        <if test="remark != null and remark !='' ">
+            remark = #{remark},
+        </if>
+    </set>
+        where sid = #{sid};
+    </update>
+
+
+    <delete id="del">
+      DELETE FROM t_student  WHERE sid= #{sid}
+    </delete>
+
+
+    <select id="load"  resultMap="stuX">
+        select  *  from  web.t_student where sid = #{sid}
+    </select>
+
+    <select id="getAll" resultMap="stuX"  parameterType="com.zihao.mybatisdemo.model.TStudent">
+       select *  from web.t_student
+         <where>
+             <choose>
+                 <when test="sname != null and sname != '' ">
+                      and sname like  concat('%',#{sname},'%')
+                 </when>
+             </choose>
+         </where>
+    </select>
+
+
+    <select id="getAlls" resultType="com.zihao.mybatisdemo.vo.StudentVo" resultMap="stuX">
+        select <include refid="xin"></include>  from web.t_student
+        <where>
+            <choose>
+                <when test="sname != null and sname != '' ">
+                    and sname like  concat('%',#{sname},'%')
+                </when>
+
+                <when test="sids != null and  sids.size != 0 ">
+                    and sid in
+                      <foreach collection="sids" item="sid"  open="("  close=")"  separator=",">
+                          #{sid}
+                      </foreach>
+                 </when>
+            </choose>
+        </where>
+    </select>
+
+
+</mapper>

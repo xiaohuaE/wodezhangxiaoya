@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zihao.mybatisdemo.mapper.Order">
+
+    <resultMap id="six" type="com.zihao.mybatisdemo.model.TOrder">
+        <id column="order_id" property="orderId" javaType="java.lang.Integer"/>
+        <result column="order_no" property="orderNo" javaType="java.lang.String"/>
+        <association property="tCustomer"  javaType="com.zihao.mybatisdemo.model.TCustomer">
+            <id column="customer_id" property="customerId" javaType="java.lang.Integer"/>
+            <result column="customer_name" property="customerName" javaType="java.lang.String"/>
+        </association>
+    </resultMap>
+
+
+
+    <select id="Get" resultMap="six">
+       SELECT  b1.order_id,a1.customer_name,b1.order_no,a1.customer_id  FROM  t_customer  a1 INNER JOIN  t_order b1 on a1.customer_id = b1.cid
+          <where>
+              <if test=" heman !=null and heman.size !=0 ">
+                  and  b1.order_id = #{heman.la}
+              </if>
+          </where>
+    </select>
+</mapper>

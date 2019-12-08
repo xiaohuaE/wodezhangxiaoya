@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zihao.mybatisdemo.mapper.duoduiduo">
+
+    <resultMap id="aee" type="com.zihao.mybatisdemo.model.TNews">
+        <id column="news_id" property="newsId" javaType="java.lang.Integer"/>
+        <result column="title" property="title" javaType="java.lang.String"/>
+        <collection property="tactegory" ofType="com.zihao.mybatisdemo.model.TCategory">
+            <id column="category_id" property="categoryId" javaType="java.lang.Integer"/>
+            <result column="category_name" property="categoryName" javaType="java.lang.String"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAll" resultMap="aee">
+        SELECT * FROM t_news T1 INNER JOIN t_news_category T2 ON T1.news_id = T2.nid
+        INNER JOIN  t_category T3 ON T3.category_id = T2.cid
+        <where>
+            <if test="ran != null and ran.size !=0">
+                and T1.news_id =#{ran.xin}
+            </if>
+        </where>
+    </select>
+
+</mapper>

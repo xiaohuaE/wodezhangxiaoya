@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zihao.mybatisdemo.mapper.Tcustomer">
+
+
+
+    <resultMap id="xio" type="com.zihao.mybatisdemo.model.TCustomer">
+        <id column="customer_id" property="customerId" javaType="java.lang.Integer"/>
+        <result column="customer_name"  property="customerName" javaType="java.lang.String"/>
+        <collection property="tOrders"  ofType="com.zihao.mybatisdemo.model.TOrder">
+            <result column="order_no" property="orderNo" javaType="java.lang.String"/>
+        </collection>
+
+    </resultMap>
+
+    <select id="Get"  resultMap="xio">
+        SELECT   a1.customer_id , a1.customer_name , b1.order_no  FROM  t_customer  a1 INNER JOIN  t_order b1 on a1.customer_id = b1.cid
+          <where>
+              <if test="ddmap != null  and ddmap.size != 0">
+                  and  a1.customer_name like  concat('%',#{ddmap.name},'%')
+              </if>
+          </where>
+    </select>
+
+</mapper>
